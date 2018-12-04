@@ -132,19 +132,19 @@ void Calibrator::Calibrate() {
 	while (charCheckForEscKey != 27 && capWebcam.isOpened()) {
 		
 		
-		// get the next frame
-		bool blnFrameReadSuccessfully = capWebcam.read(imgOriginal);
-
-		// if frame not read successfully
-		if (!blnFrameReadSuccessfully || imgOriginal.empty()) {		
+		// get the next frame and check if frame read successfully or not
+		if (!capWebcam.read(imgOriginal) || imgOriginal.empty()) {
 			cout << "error: frame not read from webcam\n";		
 			break;												
 		}
 
+		// convert the camera frame to HSV
 		cvtColor(imgOriginal, imgHSV, CV_BGR2HSV);
 
+		// apply inRAnge with the treshold values
 		inRange(imgHSV, Scalar(low_H, low_S, low_V), Scalar(high_H, high_S, high_V), imgThresh);
 
+		// same processing as in the tracker class
 		GaussianBlur(imgThresh, imgThresh, Size(3, 3), 0);
 
 		Mat structuringElement = getStructuringElement(MORPH_RECT, Size(3, 3));
